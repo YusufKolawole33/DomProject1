@@ -1,0 +1,467 @@
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Base styles for the body */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top for better scrolling on content */
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Container for the entire shopping cart */
+        .cart {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 600px;
+            box-sizing: border-box;
+        }
+
+        /* Styling for the main heading */
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+            font-weight: 700;
+            font-size: 2em;
+        }
+
+        /* Style for individual item containers */
+        .item {
+            display: flex;
+            align-items: center;
+            gap: 20px; /* Space between flex items */
+            padding: 15px 0;
+            border-bottom: 1px solid #eee; /* Separator line */
+            transition: background-color 0.3s ease; /* Smooth hover effect */
+        }
+
+        /* Remove border from the last item */
+        .item:last-child {
+            border-bottom: none;
+        }
+
+        /* Item image styling */
+        .item img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover; /* Ensures image covers the area without distortion */
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Container for item name and price */
+        .item-details {
+            flex-grow: 1; /* Allows details to take up available space */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Item name styling */
+        .item-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        /* Item price styling */
+        .item-price {
+            color: #666;
+            font-size: 1em;
+        }
+
+        /* Quantity control buttons and display */
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden; /* Ensures buttons don't spill outside border-radius */
+        }
+
+        /* Styling for quantity buttons (+/-) */
+        .quantity-controls button {
+            background-color: #f8f8f8;
+            border: none;
+            padding: 8px 12px;
+            font-size: 1.1em;
+            cursor: pointer;
+            outline: none; /* Removes outline on focus */
+            transition: background-color 0.2s;
+            color: #555;
+            user-select: none; /* Prevent text selection on button click */
+        }
+
+        .quantity-controls button:hover {
+            background-color: #e8e8e8;
+        }
+
+        /* Quantity display span */
+        .quantity {
+            padding: 0 15px;
+            font-size: 1.1em;
+            font-weight: 500;
+            color: #333;
+            min-width: 30px; /* Ensures consistent width even for single digits */
+            text-align: center;
+        }
+
+        /* Styling for like and delete buttons */
+        .like-btn, .delete-btn {
+            background: none;
+            border: none;
+            font-size: 1.5em; /* Larger icon size */
+            cursor: pointer;
+            padding: 5px;
+            margin-left: 10px;
+            transition: transform 0.2s ease-in-out; /* Pop effect on hover */
+        }
+
+        /* Style for a liked heart button */
+        .like-btn.liked {
+            color: #ff6347; /* Tomato color */
+            text-shadow: 0 0 5px rgba(255,99,71,0.5); /* Subtle glow */
+        }
+
+        /* Hover effect for action buttons */
+        .like-btn:hover, .delete-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Initial color for delete button */
+        .delete-btn {
+            color: #888;
+        }
+        /* Color change for delete button on hover */
+        .delete-btn:hover {
+            color: #dc3545; /* Red color */
+        }
+
+        /* Cart summary section (Total) */
+        .cart-summary {
+            display: flex;
+            justify-content: flex-end; /* Align total to the right */
+            align-items: center;
+            padding-top: 20px;
+            margin-top: 20px;
+            border-top: 1px solid #eee; /* Separator line */
+        }
+
+        /* Label for total price */
+        .total-label {
+            font-size: 1.4em;
+            font-weight: 600;
+            color: #333;
+            margin-right: 15px;
+        }
+
+        /* Actual total price display */
+        #total-price {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #28a745; /* Green color for total */
+        }
+
+        /* Add Item Section */
+        .add-item-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 0;
+            border-top: 1px solid #eee;
+            margin-top: 20px;
+            gap: 10px; /* Space between input and button */
+        }
+
+        .add-item-section input[type="text"] {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            flex-grow: 1; /* Allows input to take available space */
+            max-width: 300px;
+        }
+
+        .add-item-section button {
+            background-color: #007bff; /* Blue color for add button */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .add-item-section button:hover {
+            background-color: #0056b3;
+        }
+
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 768px) {
+            .item {
+                flex-wrap: wrap; /* Allow items to wrap to next line */
+                justify-content: center; /* Center items when wrapped */
+                text-align: center;
+            }
+            .item img {
+                margin-bottom: 10px;
+            }
+            .item-details {
+                align-items: center; /* Center text details */
+            }
+            .quantity-controls, .like-btn, .delete-btn {
+                margin-top: 10px;
+            }
+            .quantity-controls {
+                order: 3; /* Change display order on small screens */
+                width: 100%; /* Make quantity controls full width */
+                justify-content: center;
+            }
+            .like-btn, .delete-btn {
+                order: 4; /* Move buttons to the end */
+                font-size: 1.8em; /* Slightly larger icons on mobile */
+            }
+            .item-price {
+                order: 2; /* Price after name */
+            }
+            .add-item-section {
+                flex-direction: column; /* Stack input and button vertically */
+            }
+            .add-item-section input[type="text"],
+            .add-item-section button {
+                width: 100%; /* Full width for input and button */
+                max-width: none; /* Remove max-width restriction */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cart">
+        <h1>Shopping Cart</h1>
+        <div id="cart-items">
+            <!-- Sample Item 1 -->
+            <div class="item" data-price="15.99">
+                <img src="https://placehold.co/100x100/A0E7E0/000000?text=Fancy+Gadget" alt="Fancy Gadget">
+                <div class="item-details">
+                    <span class="item-name">Fancy Gadget</span>
+                    <span class="item-price">$15.99</span>
+                </div>
+                <div class="quantity-controls">
+                    <button class="minus-btn">-</button>
+                    <span class="quantity">1</span>
+                    <button class="plus-btn">+</button>
+                </div>
+                <button class="like-btn">❤️</button>
+                <button class="delete-btn">🗑️</button>
+            </div>
+
+            <!-- Sample Item 2 -->
+            <div class="item" data-price="25.50">
+                <img src="https://placehold.co/100x100/F0C0D0/000000?text=Super+Widget" alt="Super Widget">
+                <div class="item-details">
+                    <span class="item-name">Super Widget</span>
+                    <span class="item-price">$25.50</span>
+                </div>
+                <div class="quantity-controls">
+                    <button class="minus-btn">-</button>
+                    <span class="quantity">2</span>
+                    <button class="plus-btn">+</button>
+                </div>
+                <button class="like-btn">❤️</button>
+                <button class="delete-btn">🗑️</button>
+            </div>
+
+            <!-- Sample Item 3 -->
+            <div class="item" data-price="5.25">
+                <img src="https://placehold.co/100x100/C8E6C9/000000?text=Basic+Thingy" alt="Basic Thingy">
+                <div class="item-details">
+                    <span class="item-name">Basic Thingy</span>
+                    <span class="item-price">$5.25</span>
+                </div>
+                <div class="quantity-controls">
+                    <button class="minus-btn">-</button>
+                    <span class="quantity">1</span>
+                    <button class="plus-btn">+</button>
+                </div>
+                <button class="like-btn">❤️</button>
+                <button class="delete-btn">🗑️</button>
+            </div>
+
+        </div>
+
+        <div class="cart-summary">
+            <span class="total-label">Total:</span>
+            <span id="total-price">$0.00</span>
+        </div>
+
+        <div class="add-item-section">
+            <input type="text" id="newItemName" placeholder="Enter new item name">
+            <button id="addItemBtn">Add New Item</button>
+        </div>
+    </div>
+
+    <script>
+        // Ensure the DOM is fully loaded before running the script
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get references to key elements in the DOM
+            const cartItemsContainer = document.getElementById('cart-items');
+            const totalPriceElement = document.getElementById('total-price');
+            const addItemBtn = document.getElementById('addItemBtn');
+            const newItemNameInput = document.getElementById('newItemName');
+
+            /**
+             * Calculates and updates the total price of all items in the cart.
+             * It iterates through each item, gets its price and quantity,
+             * sums them up, and updates the displayed total.
+             */
+            function updateCartTotal() {
+                let total = 0;
+                // Select all elements with the class 'item'
+                document.querySelectorAll('.item').forEach(item => {
+                    // Get the base price from the 'data-price' attribute
+                    const price = parseFloat(item.dataset.price);
+                    // Get the current quantity from the span
+                    const quantity = parseInt(item.querySelector('.quantity').textContent);
+                    // Add the item's subtotal to the grand total
+                    total += price * quantity;
+                });
+                // Update the total price display, formatted to two decimal places
+                totalPriceElement.textContent = `$${total.toFixed(2)}`;
+            }
+
+            /**
+             * Sets up all necessary event listeners for a given shopping cart item.
+             * This function is called for each initial item and can be reused if new items are added dynamically.
+             * @param {HTMLElement} item - The individual item's DOM element.
+             */
+            function setupItemEventListeners(item) {
+                // Get references to buttons and quantity display within this specific item
+                const minusBtn = item.querySelector('.minus-btn');
+                const plusBtn = item.querySelector('.plus-btn');
+                const quantitySpan = item.querySelector('.quantity');
+                const likeBtn = item.querySelector('.like-btn');
+                const deleteBtn = item.querySelector('.delete-btn');
+
+                // Event listener for the '+' button to increase quantity
+                plusBtn.addEventListener('click', () => {
+                    let quantity = parseInt(quantitySpan.textContent);
+                    quantity++; // Increment quantity
+                    quantitySpan.textContent = quantity; // Update display
+                    updateCartTotal(); // Recalculate total price
+                });
+
+                // Event listener for the '-' button to decrease quantity
+                minusBtn.addEventListener('click', () => {
+                    let quantity = parseInt(quantitySpan.textContent);
+                    if (quantity > 1) { // Prevent quantity from going below 1
+                        quantity--; // Decrement quantity
+                        quantitySpan.textContent = quantity; // Update display
+                        updateCartTotal(); // Recalculate total price
+                    }
+                });
+
+                // Event listener for the 'like' heart button
+                likeBtn.addEventListener('click', () => {
+                    // Toggle the 'liked' class to change its color (CSS handles the style change)
+                    likeBtn.classList.toggle('liked');
+                });
+
+                // Event listener for the 'delete' trash can button
+                deleteBtn.addEventListener('click', () => {
+                    // Remove the entire item element from the DOM
+                    item.remove();
+                    updateCartTotal(); // Recalculate total price after deletion
+                });
+            }
+
+            /**
+             * Creates and appends a new item to the shopping cart.
+             * @param {string} name - The name of the new item.
+             * @param {number} price - The price of the new item.
+             * @param {string} imageUrl - The URL for the item's image.
+             * @param {number} initialQuantity - The initial quantity of the item.
+             */
+            function addNewItemToCart(name, price, imageUrl, initialQuantity) {
+                // Create the main item div
+                const itemDiv = document.createElement('div');
+                itemDiv.classList.add('item');
+                itemDiv.dataset.price = price.toFixed(2); // Store price as a data attribute
+
+                // Populate the inner HTML of the new item
+                itemDiv.innerHTML = `
+                    <img src="${imageUrl}" alt="${name}">
+                    <div class="item-details">
+                        <span class="item-name">${name}</span>
+                        <span class="item-price">$${price.toFixed(2)}</span>
+                    </div>
+                    <div class="quantity-controls">
+                        <button class="minus-btn">-</button>
+                        <span class="quantity">${initialQuantity}</span>
+                        <button class="plus-btn">+</button>
+                    </div>
+                    <button class="like-btn">❤️</button>
+                    <button class="delete-btn">🗑️</button>
+                `;
+
+                // Append the new item to the cart items container
+                cartItemsContainer.appendChild(itemDiv);
+
+                // Set up event listeners for the newly added item
+                setupItemEventListeners(itemDiv);
+
+                // Update the total price after adding a new item
+                updateCartTotal();
+            }
+
+            // Event listener for the "Add New Item" button
+            addItemBtn.addEventListener('click', () => {
+                const newItemName = newItemNameInput.value.trim();
+                if (newItemName) {
+                    // Generate a random price for demonstration purposes
+                    const randomPrice = (Math.random() * 50 + 5).toFixed(2);
+                    const randomWidth = Math.floor(Math.random() * (120 - 80 + 1)) + 80;
+                    const randomHeight = Math.floor(Math.random() * (120 - 80 + 1)) + 80;
+                    const placeholderColor = Math.floor(Math.random()*16777215).toString(16); // Random hex color
+                    const textColor = Math.floor(Math.random()*16777215).toString(16); // Random hex color
+
+                    const imageUrl = `https://placehold.co/${randomWidth}x${randomHeight}/${placeholderColor}/${textColor}?text=${encodeURIComponent(newItemName)}`;
+
+                    addNewItemToCart(newItemName, parseFloat(randomPrice), imageUrl, 1);
+                    newItemNameInput.value = ''; // Clear the input field
+                } else {
+                    // Simple message for empty input, in a real app this would be a modal/toast
+                    console.log('Please enter an item name.');
+                }
+            });
+
+            // Iterate over all existing '.item' elements when the page loads
+            // and apply the event listeners to each one.
+            document.querySelectorAll('.item').forEach(item => {
+                setupItemEventListeners(item);
+            });
+
+            // Perform an initial calculation of the total price when the page first loads
+            // to ensure it reflects the preselected quantities.
+            updateCartTotal();
+        });
+    </script>
+</body>
+</html>
